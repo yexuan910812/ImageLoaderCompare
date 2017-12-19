@@ -40,9 +40,9 @@ public enum LoaderFactory {
     public interface ILoader {
         void init(Context context);
 
-        void fillingWithUri(Context context, SimpleDraweeView iv, Uri uri, IOnLoadCallback callback);
+        void fillingWithUri(Context context, CompatImageViewHolder ivHolder, Uri uri, IOnLoadCallback callback);
 
-        void cancelFilling(Context context, SimpleDraweeView iv);
+        void cancelFilling(Context context, CompatImageViewHolder ivHolder);
 
         void clearAllCache(Context context);
     }
@@ -54,13 +54,19 @@ public enum LoaderFactory {
     public ILoader getLoader(LoaderType type) {
         switch (type) {
             case Picasso:
-                return PicassoLoader.newInstance();
+                return PicassoLoader.getInstance();
             case Glide:
-                return GlideLoader.newInstance();
+                return GlideLoader.getInstance();
             case Fresco:
             default:
-                return FrescoLoader.newInstance();
+                return FrescoLoader.getInstance();
         }
+    }
+
+    public void initAll(Context context) {
+        PicassoLoader.getInstance().init(context);
+        GlideLoader.getInstance().init(context);
+        FrescoLoader.getInstance().init(context);
     }
 
     private static class PicassoLoader implements ILoader {
@@ -68,7 +74,7 @@ public enum LoaderFactory {
 
         private volatile static ILoader sInstance = null;
 
-        private static ILoader newInstance() {
+        private static ILoader getInstance() {
             if (sInstance != null) {
                 return sInstance;
             } else {
@@ -87,7 +93,8 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void fillingWithUri(Context context, SimpleDraweeView iv, final Uri uri, final IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, CompatImageViewHolder ivHolder, final Uri uri, final IOnLoadCallback callback) {
+            ImageView iv = ivHolder.switchToLegend();
             Picasso.with(context).load(uri).into(iv, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -104,8 +111,8 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void cancelFilling(Context context, SimpleDraweeView iv) {
-            Picasso.with(context).cancelRequest(iv);
+        public void cancelFilling(Context context, CompatImageViewHolder ivHolder) {
+            Picasso.with(context).cancelRequest(ivHolder.switchToLegend());
         }
 
         @Override
@@ -119,7 +126,7 @@ public enum LoaderFactory {
 
         private volatile static ILoader sInstance = null;
 
-        private static ILoader newInstance() {
+        private static ILoader getInstance() {
             if (sInstance != null) {
                 return sInstance;
             } else {
@@ -137,7 +144,8 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void fillingWithUri(Context context, SimpleDraweeView iv, final Uri uri, final IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, CompatImageViewHolder ivHolder, final Uri uri, final IOnLoadCallback callback) {
+            ImageView iv = ivHolder.switchToLegend();
             Glide.with(context).load(uri).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -156,8 +164,8 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void cancelFilling(Context context, SimpleDraweeView iv) {
-            Glide.with(context).clear(iv);
+        public void cancelFilling(Context context, CompatImageViewHolder ivHolder) {
+            Glide.with(context).clear(ivHolder.switchToLegend());
         }
 
         @Override
@@ -179,7 +187,7 @@ public enum LoaderFactory {
 
         private volatile static ILoader sInstance = null;
 
-        private static ILoader newInstance() {
+        private static ILoader getInstance() {
             if (sInstance != null) {
                 return sInstance;
             } else {
@@ -194,16 +202,18 @@ public enum LoaderFactory {
 
         @Override
         public void init(Context context) {
-
+            Fresco.initialize(context);
         }
 
         @Override
-        public void fillingWithUri(Context context, SimpleDraweeView iv, Uri uri, final IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, CompatImageViewHolder ivHolder, Uri uri, final IOnLoadCallback callback) {
+            SimpleDraweeView iv = ivHolder.switchToFresco();
+
             ImageRequestBuilder imageRequestBuilder =
                     ImageRequestBuilder.newBuilderWithSource(uri);
-            imageRequestBuilder.setResizeOptions(new ResizeOptions(
-                    iv.getLayoutParams().width,
-                    iv.getLayoutParams().height));
+//            imageRequestBuilder.setResizeOptions(new ResizeOptions(
+//                    iv.getLayoutParams().width,
+//                    iv.getLayoutParams().height));
             ImageRequest request = imageRequestBuilder.build();
             DraweeController draweeController = Fresco.newDraweeControllerBuilder()
                     .setImageRequest(request)
@@ -212,12 +222,14 @@ public enum LoaderFactory {
                         @Override
                         public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                             super.onFinalImageSet(id, imageInfo, animatable);
+                            Log.i(TAG, "hy: load succ!");
                             callback.onLoad(true);
                         }
 
                         @Override
                         public void onFailure(String id, Throwable throwable) {
                             super.onFailure(id, throwable);
+                            Log.w(TAG, "hy: load failed!");
                             callback.onLoad(false);
                         }
                     })
@@ -228,11 +240,11 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void cancelFilling(Context context, SimpleDraweeView iv) {
-            Object tag = iv.getTag();
+        public void cancelFilling(Context context, CompatImageViewHolder ivHolder) {
+            Object tag = ivHolder.switchToFresco().getTag();
             if(tag != null && tag instanceof ImageRequest) {
                 ImagePipeline pipeline = Fresco.getImagePipeline();
-                com.facebook.datasource.DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage((ImageRequest) iv.getTag(), context);
+                com.facebook.datasource.DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage((ImageRequest) ivHolder.getTag(), context);
                 if(dataSource != null) {
                     dataSource.close();
                 }

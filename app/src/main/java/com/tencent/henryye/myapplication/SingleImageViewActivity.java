@@ -14,7 +14,7 @@ public class SingleImageViewActivity extends AppCompatActivity implements PickLo
     private static final String TAG = "MicroMsg.SingleImageViewActivity";
 
     private PickLoaderView mPickLoaderView = null;
-    private SimpleDraweeView mLargeImageView = null; // 本质上也是ImageView，可以混用
+    private CompatImageViewHolder mLargeImageView = null; // 本质上也是ImageView，可以混用
     private RadioGroup mPicSelectRg = null;
     private String selectedAssets = null;
 
@@ -41,7 +41,7 @@ public class SingleImageViewActivity extends AppCompatActivity implements PickLo
     @Override
     public void onRequestStart(LoaderType type) {
         Utils.setSelectEnabled(mPicSelectRg, false);
-        LoaderFactory.INSTANCE.getLoader(type).fillingWithUri(this, mLargeImageView, Utils.getUriFromAssets(selectedAssets), new LoaderFactory.IOnLoadCallback() {
+        LoaderFactory.INSTANCE.getLoader(type).fillingWithUri(this, mLargeImageView, Utils.getUriFromAssets(selectedAssets, type), new LoaderFactory.IOnLoadCallback() {
             @Override
             public void onLoad(boolean isSuc) {
                 Log.i(TAG, "hy: is load succ: " + isSuc);

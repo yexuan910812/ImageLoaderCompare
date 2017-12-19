@@ -26,7 +26,7 @@ public enum StatsMonitor {
 
     private static final String TAG = "MicroMsg.StatsMonitor";
 
-    private static final long FIXED_RATE = 25; // 50ms 检查一次
+    private static final long FIXED_RATE = 5; // 3ms 检查一次
 
     private WeakReference<Context> mCurrentContext = null;
 
@@ -65,6 +65,7 @@ public enum StatsMonitor {
                 @Override
                 public void run() {
 //                    Log.v(TAG, "hy: called to calculate");
+                    long ticksBefore = System.currentTimeMillis();
                     synchronized (handleLock) {
                         if(isRunning) {
                             for(IRecord recorder : mRecords) {
@@ -75,6 +76,7 @@ public enum StatsMonitor {
                             cancel();
                         }
                     }
+                    Log.v(TAG, "hy: frame check using " + (System.currentTimeMillis() - ticksBefore));
                 }
             }, 0, FIXED_RATE);
             isRunning = true;
@@ -119,6 +121,7 @@ public enum StatsMonitor {
 
         public MemoryRecord() {
             memoryUsedWhenInit = Utils.getCurrentTotalMemoryInMB(mCurrentContext.get());
+            Log.v(TAG, "hy: init mem to " + memoryUsedWhenInit);
         }
 
         private List<Double> totalMemRecord = new ArrayList<>(100);
@@ -135,12 +138,13 @@ public enum StatsMonitor {
                 Log.w(TAG, "hy: check frames 0!");
                 return;
             }
-            long totalMem = 0;
+            Double totalMem = Double.valueOf(0);
             for(Double item : totalMemRecord) {
                 totalMem += item;
                 currentMaxUsedMemory = Math.max(currentMaxUsedMemory, item);
             }
-            long averageTotalMem = totalMem / checkFrames;
+            Double averageTotalMem = totalMem / checkFrames;
+            currentMaxUsedMemory = currentMaxUsedMemory - memoryUsedWhenInit;
             averUsed = averageTotalMem - memoryUsedWhenInit;
             // 计算标准差
             long sum = 0;
@@ -155,6 +159,7 @@ public enum StatsMonitor {
             // 由于存在一定概率图片加载过程中申请了大量的内存，导致系统进行全面gc以满足需求，因此需要将最低值内存设置为初始内存。
             double currentMem = Utils.getCurrentTotalMemoryInMB(mCurrentContext.get());
             memoryUsedWhenInit = Math.min(currentMem, memoryUsedWhenInit);
+            Log.v(TAG, "hy: updating init mem to " + memoryUsedWhenInit);
             totalMemRecord.add(currentMem);
         }
 
@@ -207,6 +212,9 @@ public enum StatsMonitor {
 
         @Override
         public void filling() {
+            if(fpss == null) {
+                return;
+            }
             if(fpss != null && fpss.size() != 0) {
                 double fpsSum = 0;
                 for(double item : fpss) {

@@ -12,6 +12,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Metronome.INSTANCE.start();
+        LoaderFactory.INSTANCE.initAll(getApplicationContext());
     }
 
     @Override
