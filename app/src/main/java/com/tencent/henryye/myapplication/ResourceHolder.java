@@ -9,7 +9,7 @@ package com.tencent.henryye.myapplication;
 public class ResourceHolder {
     private static final String TAG = "MicroMsg.ResourceHolder";
 
-    public static String[] assets = {"111.jpg", "20170613.webp", "aaa.jpg", "ccc.jpg", "extremely_large.png", "giphy.gif", "giphy_1.gif", "pony.jpg", "medium.jpg"};
+    public static String[] assets = {"111.jpg", "20170613.webp", "aaa.jpg", "ccc.jpg", "extremely_large.jpg", "giphy.gif", "giphy_1.gif", "pony.jpg", "medium.jpg"};
 
     // 网络性能比较参考价值不大，会因为网速等因素，导致数据差距很大。而且各家实现方法都是将图片加载到本地-decode文件的方式，没有区别，因此可以忽略
 //    public static String[] urls = {"http://img.sc115.com/uploads/sc/jpgs/05/xpic6813_sc115.com.jpg"
