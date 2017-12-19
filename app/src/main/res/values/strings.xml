@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">TestImageLoaders</string>
 
     <string name="test_single">测试单图</string>
     <string name="test_list">测试列表</string>

@@ -48,7 +48,7 @@
 
         </RadioGroup>
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/image_view"
             android:layout_width="480dp"
             android:layout_height="480dp"

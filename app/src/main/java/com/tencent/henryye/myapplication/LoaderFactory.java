@@ -2,6 +2,7 @@ package com.tencent.henryye.myapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -13,6 +14,17 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -28,9 +40,9 @@ public enum LoaderFactory {
     public interface ILoader {
         void init(Context context);
 
-        void fillingWithUri(Context context, ImageView iv, Uri uri, IOnLoadCallback callback);
+        void fillingWithUri(Context context, SimpleDraweeView iv, Uri uri, IOnLoadCallback callback);
 
-        void cancelFilling(Context context, ImageView iv);
+        void cancelFilling(Context context, SimpleDraweeView iv);
 
         void clearAllCache(Context context);
     }
@@ -75,7 +87,7 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void fillingWithUri(Context context, ImageView iv, final Uri uri, final IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, SimpleDraweeView iv, final Uri uri, final IOnLoadCallback callback) {
             Picasso.with(context).load(uri).into(iv, new Callback() {
                 @Override
                 public void onSuccess() {
@@ -92,7 +104,7 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void cancelFilling(Context context, ImageView iv) {
+        public void cancelFilling(Context context, SimpleDraweeView iv) {
             Picasso.with(context).cancelRequest(iv);
         }
 
@@ -125,7 +137,7 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void fillingWithUri(Context context, ImageView iv, final Uri uri, final IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, SimpleDraweeView iv, final Uri uri, final IOnLoadCallback callback) {
             Glide.with(context).load(uri).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -144,7 +156,7 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void cancelFilling(Context context, ImageView iv) {
+        public void cancelFilling(Context context, SimpleDraweeView iv) {
             Glide.with(context).clear(iv);
         }
 
@@ -186,18 +198,51 @@ public enum LoaderFactory {
         }
 
         @Override
-        public void fillingWithUri(Context context, ImageView iv, Uri uri, IOnLoadCallback callback) {
+        public void fillingWithUri(Context context, SimpleDraweeView iv, Uri uri, final IOnLoadCallback callback) {
+            ImageRequestBuilder imageRequestBuilder =
+                    ImageRequestBuilder.newBuilderWithSource(uri);
+            imageRequestBuilder.setResizeOptions(new ResizeOptions(
+                    iv.getLayoutParams().width,
+                    iv.getLayoutParams().height));
+            ImageRequest request = imageRequestBuilder.build();
+            DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+                    .setImageRequest(request)
+                    .setOldController(iv.getController())
+                    .setControllerListener(new BaseControllerListener<ImageInfo>(){
+                        @Override
+                        public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                            super.onFinalImageSet(id, imageInfo, animatable);
+                            callback.onLoad(true);
+                        }
 
+                        @Override
+                        public void onFailure(String id, Throwable throwable) {
+                            super.onFailure(id, throwable);
+                            callback.onLoad(false);
+                        }
+                    })
+                    .setAutoPlayAnimations(true)
+                    .build();
+            iv.setController(draweeController);
+            iv.setTag(request);
         }
 
         @Override
-        public void cancelFilling(Context context, ImageView iv) {
+        public void cancelFilling(Context context, SimpleDraweeView iv) {
+            Object tag = iv.getTag();
+            if(tag != null && tag instanceof ImageRequest) {
+                ImagePipeline pipeline = Fresco.getImagePipeline();
+                com.facebook.datasource.DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage((ImageRequest) iv.getTag(), context);
+                if(dataSource != null) {
+                    dataSource.close();
+                }
+            }
 
         }
 
         @Override
         public void clearAllCache(Context context) {
-
+            Fresco.getImagePipeline().clearCaches();
         }
     }
 }
