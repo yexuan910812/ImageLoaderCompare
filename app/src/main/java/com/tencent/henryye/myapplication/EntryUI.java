@@ -16,7 +16,7 @@ public class EntryUI extends AppCompatActivity {
         findViewById(R.id.test_large_bitmap).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EntryUI.this, LargeImageViewActivity.class));
+                startActivity(new Intent(EntryUI.this, SingleImageViewActivity.class));
             }
         });
     }

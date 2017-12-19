@@ -11,13 +11,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context="com.tencent.henryye.myapplication.LargeImageViewActivity">
+        tools:context="com.tencent.henryye.myapplication.SingleImageViewActivity">
 
         <com.tencent.henryye.myapplication.PickLoaderView
             android:id="@+id/pick_loader_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+
+        <RadioGroup
+            android:id="@+id/select_single_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:checkedButton="@+id/medium_image"
+            >
+            <RadioButton
+                android:id="@+id/medium_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_single_medium"
+                />
+            <RadioButton
+                android:id="@+id/large_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_single_large"
+                />
+            <RadioButton
+                android:id="@+id/extremely_large_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_single_extremely_large"
+                />
+
+        </RadioGroup>
 
         <ImageView
             android:id="@+id/image_view"

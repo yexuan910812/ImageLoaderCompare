@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.RadioGroup;
 
 /**
  * Created by henryye on 2017/12/13.
@@ -24,5 +25,11 @@ public class Utils {
         double memUsedInKB = (double)(mi.totalMem - mi.availMem) / 1024 / 1024;
 //        Log.d(TAG, "hy: memory is " + memUsedInKB);
         return memUsedInKB;
+    }
+
+    public static void setSelectEnabled(RadioGroup group, boolean enabled) {
+        for(int i = 0; i < group.getChildCount(); i++){
+            (group.getChildAt(i)).setEnabled(enabled);
+        }
     }
 }

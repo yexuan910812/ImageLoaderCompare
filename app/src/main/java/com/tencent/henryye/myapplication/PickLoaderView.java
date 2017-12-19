@@ -92,25 +92,19 @@ public class PickLoaderView extends LinearLayout {
         });
     }
 
-    private void setSelectEnabled(boolean enabled) {
-        for(int i = 0; i < mCurrentSelectedTypeRg.getChildCount(); i++){
-            (mCurrentSelectedTypeRg.getChildAt(i)).setEnabled(enabled);
-        }
-    }
-
     private void updateLock(boolean isLocked) {
         Log.d(TAG, "hy: updating is locked! " + isLocked);
         this.isLocked = isLocked;
         if (isLocked) {
             mStartBtn.setEnabled(false);
             mClearCacheBtn.setEnabled(false);
-            setSelectEnabled(false);
+            Utils.setSelectEnabled(mCurrentSelectedTypeRg, false);
             mLoadingDuringTv.setText(getResources().getText(R.string.loading));
             mPerformanceTv.setText(getResources().getText(R.string.loading));
         } else {
             mStartBtn.setEnabled(true);
             mClearCacheBtn.setEnabled(true);
-            setSelectEnabled(true);
+            Utils.setSelectEnabled(mCurrentSelectedTypeRg, true);
 
             // start fetch info
             mLoadingDuringTv.setText(getResources().getString(R.string.load_cost_in_ms, System.currentTimeMillis() - startTicks));
