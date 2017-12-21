@@ -13,4 +13,18 @@
         android:text="@string/test_single"
         />
 
+    <Button
+        android:id="@+id/test_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/test_list"
+        />
+
+    <Button
+        android:id="@+id/test_gif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/test_list_gif"
+        />
+
 </LinearLayout>

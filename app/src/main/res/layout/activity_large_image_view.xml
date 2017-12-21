@@ -14,7 +14,7 @@
         android:orientation="vertical"
         tools:context="com.tencent.henryye.myapplication.SingleImageViewActivity">
 
-        <com.tencent.henryye.myapplication.PickLoaderView
+        <com.tencent.henryye.imgcompare.testui.PickLoaderView
             android:id="@+id/pick_loader_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
 
         </RadioGroup>
 
-        <com.tencent.henryye.myapplication.CompatImageViewHolder
+        <com.tencent.henryye.imgcompare.loadercompat.CompatImageViewHolder
             android:id="@+id/image_view"
             android:layout_width="480dp"
             android:layout_height="480dp"

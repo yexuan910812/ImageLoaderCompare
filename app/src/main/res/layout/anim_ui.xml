@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="true"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.tencent.henryye.imgcompare.testui.PickLoaderView
+            android:id="@+id/pick_loader_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <RadioGroup
+            android:id="@+id/select_gif_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:checkedButton="@+id/medium_image"
+            >
+            <RadioButton
+                android:id="@+id/medium_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_anim_medium"
+                />
+            <RadioButton
+                android:id="@+id/large_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_anim_large"
+                />
+            <RadioButton
+                android:id="@+id/extremely_large_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/test_anim_ex_large"
+                />
+
+        </RadioGroup>
+
+        <com.tencent.henryye.imgcompare.loadercompat.CompatImageViewHolder
+            android:id="@+id/image_view"
+            android:layout_width="480dp"
+            android:layout_height="480dp"
+            />
+
+    </LinearLayout>
+</ScrollView>

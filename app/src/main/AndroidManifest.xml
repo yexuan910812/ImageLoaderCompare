@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tencent.henryye.myapplication">
+          package="com.tencent.henryye.imgcompare">
 
     <application
         android:name=".SampleApplication"
@@ -17,8 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SingleImageViewActivity">
+        <activity android:name=".testui.SingleImageViewActivity">
         </activity>
+        <activity android:name=".testui.ListImageActivity">
+        </activity>
+        <activity android:name=".testui.AnimatedImageActivity"/>
     </application>
 
 </manifest>
